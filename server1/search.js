@@ -8,7 +8,7 @@ document.getElementById("searchForm").addEventListener("submit", async function(
     }
   
     try {
-      const response = await fetch(`/api/definitions?word=${encodeURIComponent(searchTerm)}`);
+      const response = await fetch(`/api/definitions/?word=${encodeURIComponent(searchTerm)}`);
       if (response.status === 404) {
         document.getElementById("result").innerText = `Word '${searchTerm}' not found in the dictionary.`;
         return;
