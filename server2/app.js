@@ -1,55 +1,85 @@
-const http = require('http');
-const url = require('url');
+/**
+ * <Used ChatGPT as a guide.>
+ */
 
-let dictionary = [];
+const http = require('http')
+const path = require('path')
+const url = require('url')
+const fs = require('fs')
+const { getDate, readFile, writeFile, handle404 } = require('./modules/utils')
 
+// Create the server.
 const server = http.createServer((req, res) => {
-  const { pathname, query } = url.parse(req.url, true);
+  // Parse the request URL
+  const parsedUrl = url.parse(req.url, true)
 
-  if (req.method === 'GET') {
-    // Handle GET requests
-    if (pathname === '/api/definitions') {
-      const word = query.word;
-      const definition = dictionary.find(entry => entry.word === word);
-      if (definition) {
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify(definition));
-      } else {
-        res.writeHead(404, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ message: `Word '${word}' not found in the dictionary` }));
-      }
-    }
-  } else if (req.method === 'POST') {
-    // Handle POST requests
-    if (pathname === '/api/definitions') {
-      let body = '';
-      req.on('data', chunk => {
-        body += chunk.toString(); // Convert Buffer to string
-      });
-      req.on('end', () => {
-        const { word, definition } = JSON.parse(body);
-        if (typeof word === 'string' && typeof definition === 'string' && word.trim() !== '' && definition.trim() !== '') {
-          const existingEntry = dictionary.find(entry => entry.word === word);
-          if (existingEntry) {
-            res.writeHead(409, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ message: `Warning! '${word}' already exists in the dictionary` }));
-          } else {
-            dictionary.push({ word, definition });
-            const totalEntries = dictionary.length;
-            const requestId = Math.floor(Math.random() * 1000); // Simulated request ID
-            res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ message: `Request #${requestId}`, totalEntries }));
-          }
-        } else {
-          res.writeHead(400, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ message: 'Invalid request body' }));
-        }
-      });
-    }
+  // Get the pathname from the URL
+  let pathname = parsedUrl.pathname
+
+  // Handle no path error.
+  if (!pathname) {
+    res.writeHead(404, { 'Content-Type': 'text/plain' })
+    res.end('404 Not Found')
+    return
   }
-});
 
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+  // Serve CSS files.
+  if (pathname.endsWith('.css')) {
+    serveFile(res, `${pathname}`, 'text/css')
+  }
+
+  // Serve JavaScript files.
+  else if (pathname.endsWith('.js')) {
+    serveFile(res, `${pathname}`, 'text/js')
+  }
+
+  // Handle request for getting date.
+  else if (parsedUrl.pathname === '/labs/3/getDate') {
+    const name = parsedUrl.query.name || 'NO_NAME'
+    getDate(res, name)
+  }
+  // Handle request for writing to file.
+  else if (parsedUrl.pathname === '/labs/3/writeFile') {
+    writeFile(req, res)
+  }
+
+  // Handle request for reading from file.
+  else if (parsedUrl.pathname === '/labs/3/readFile/file.txt') {
+    readFile(req, res)
+  }
+
+  // Handle path not found.
+  else {
+    handle404(req, res)
+  }
+})
+
+/**Serves a file to the connected user.
+ *
+ * @param {Response} res The server response.
+ * @param {string} relativePath The relative path.
+ * @param {string} contentType The type of content.
+ */
+function serveFile (res, relativePath, contentType) {
+  // Join the file path.
+  const filePath = path.join(__dirname, relativePath)
+
+  // Read the file.
+  fs.readFile(filePath, 'utf-8', (err, data) => {
+    if (err) {
+      // Handle file read error.
+      res.writeHead(500, { 'Content-Type': 'text/plain' })
+      res.end('Internal Server Error')
+    } else {
+      // Serve the file content
+      res.writeHead(200, { contentType: contentType })
+      res.end(data)
+    }
+  })
+}
+
+const port = 45371
+
+server.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`)
+})
