@@ -33,18 +33,24 @@ const server = http.createServer((req, res) => {
     serveFile(res, `${pathname}`, 'text/js')
   }
 
+  
+  // Handle request for index.html.
+  else if (parsedUrl.pathname === '/COMP4537/labs/4') {
+    serveFile(res, `./index.html`, 'text/html');
+  }
+
   // Handle request for getting date.
-  else if (parsedUrl.pathname === '/labs/3/getDate') {
-    const name = parsedUrl.query.name || 'NO_NAME'
+  else if (parsedUrl.pathname === '/labs/4/api/definitions/*') {
+    const name = parsedUrl.query.word || 'NO_WORD'
     getDate(res, name)
   }
   // Handle request for writing to file.
-  else if (parsedUrl.pathname === '/labs/3/writeFile') {
+  else if (parsedUrl.pathname === '/labs/4/writeFile') {
     writeFile(req, res)
   }
 
   // Handle request for reading from file.
-  else if (parsedUrl.pathname === '/labs/3/readFile/file.txt') {
+  else if (parsedUrl.pathname === '/labs/4/readFile/file.txt') {
     readFile(req, res)
   }
 
