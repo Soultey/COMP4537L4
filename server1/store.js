@@ -1,5 +1,7 @@
+const { USER_MESSAGES } = require('./lang/en/en');
+
 // Add an event listener to the form with the ID "storeForm"
-document.getElementById("storeForm").addEventListener("submit", async function(event) {
+document.getElementById("storeForm").addEventListener("submit", async function (event) {
   // Prevent the default form submission behavior
   event.preventDefault();
 
@@ -12,7 +14,7 @@ document.getElementById("storeForm").addEventListener("submit", async function(e
   // Check if either the word or definition input is empty
   if (!word || !definition) {
     // Display an error message if either field is empty
-    document.getElementById("feedback").innerText = "Please fill in both fields.";
+    document.getElementById("feedback").innerText = USER_MESSAGES.pleaseFillInBothFields;
     return;
   }
 
@@ -39,6 +41,6 @@ document.getElementById("storeForm").addEventListener("submit", async function(e
     console.error('Error:', error);
 
     // Display a generic error message if an error occurs
-    document.getElementById("feedback").innerText = "An error occurred. Please try again.";
+    document.getElementById("feedback").innerText = USER_MESSAGES.errorOccurredPleaseTryAgain;
   }
 });
