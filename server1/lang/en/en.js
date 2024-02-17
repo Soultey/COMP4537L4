@@ -8,5 +8,4 @@ const USER_MESSAGES = {
 
 module.exports = {
     USER_MESSAGES,
-
 }
