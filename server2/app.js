@@ -8,6 +8,7 @@ const url = require('url')
 const fs = require('fs')
 const { handle404, getRequestBody } = require('./modules/utils')
 const { ServerDictionary } = require('./modules/dictionary')
+const { port } = require('./config.json');
 
 const serverDictionary = new ServerDictionary();
 
@@ -37,7 +38,7 @@ const server = http.createServer((req, res) => {
       handle404(req, res)
     }
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 
 });
@@ -50,7 +51,6 @@ const server = http.createServer((req, res) => {
 async function handleDefinitionsRoute(req, res) {
   // Parse the url and get the word.
   const parsedUrl = url.parse(req.url, true);
-  const word = parsedUrl.query.word;
 
   // If GET, get the definition.
   if (req.method === 'GET') {
@@ -103,11 +103,9 @@ function serveFile(res, relativePath, contentType) {
       }
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 }
-
-const port = 45371
 
 server.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`)
