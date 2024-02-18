@@ -19,23 +19,35 @@ document.getElementById("storeForm").addEventListener("submit", async function (
   }
 
   try {
-    // Prepare the request options for the AJAX call
-    const requestOptions = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json' // Set the content type as JSON
-      },
-      body: JSON.stringify({ word, definition }) // Convert the word and definition data to JSON
+    // Create a new XMLHttpRequest object
+    const xhr = new XMLHttpRequest();
+
+    // Configure the request
+    xhr.open("POST", "/labs/4/api/definitions", true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+
+    // Define a callback function to handle the response
+    xhr.onload = function () {
+      if (xhr.status === 200) {
+        // Parse the JSON response
+        const responseData = JSON.parse(xhr.responseText);
+
+        // Update the feedback element with the message returned from the server
+        document.getElementById("feedback").innerText = responseData.message;
+      } else {
+        // Display a generic error message if the request fails
+        document.getElementById("feedback").innerText = USER_MESSAGES.errorOccurredPleaseTryAgain;
+      }
     };
 
-    // Send an AJAX request to the '/api/definitions' endpoint
-    const response = await fetch('/api/definitions', requestOptions);
+    // Handle network errors
+    xhr.onerror = function () {
+      console.error('Error:', xhr.statusText);
+      document.getElementById("feedback").innerText = USER_MESSAGES.errorOccurredPleaseTryAgain;
+    };
 
-    // Parse the JSON response
-    const responseData = await response.json();
-
-    // Update the feedback element with the message returned from the server
-    document.getElementById("feedback").innerText = responseData.message;
+    // Send the request with the JSON payload
+    xhr.send(JSON.stringify({ word, definition }));
   } catch (error) {
     // Log any errors to the console
     console.error('Error:', error);
