@@ -4,8 +4,8 @@ const USER_MESSAGES = {
     'pleaseEnterASearchTerm': 'Please enter a search term.',
     'wordSearchTermNotFound': 'Word %1 not found in the dictionary.',
     'errorOccurredPleaseTryAgain': 'An error occurred. Please try again.'
-}
+};
 
-module.exports = {
+exports = {
     USER_MESSAGES,
-}
+};
