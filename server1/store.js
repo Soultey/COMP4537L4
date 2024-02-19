@@ -1,41 +1,73 @@
-// store.js
 import { USER_MESSAGES } from './lang/en/en.js';
+const { searchEndpoint } = await getJSON('./config.json');
 
-document.getElementById("storeForm").addEventListener("submit", async function (event) {
-  event.preventDefault();
+$(document).ready(() => {
+  $('#storeForm').on('submit', (event) => {
+    event.preventDefault();
+    handleSearch(event);
+  });
+})
 
-  const wordInput = document.getElementById("wordInput");
-  const definitionInput = document.getElementById("definitionInput");
-  const word = wordInput.value.trim();
-  const definition = definitionInput.value.trim();
-
-  if (!word || !definition) {
-    document.getElementById("feedback").innerText = USER_MESSAGES.pleaseFillInBothFields;
-    return;
-  }
-
+/** Returns the data and status of a JSON file.
+ * 
+ * @param {string} url The path to the file.
+ * @returns 
+ */
+async function getJSON(path) {
   try {
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", "https://comp4537.alterbotcreations.com/labs/4/api/definitions", true);
-    xhr.setRequestHeader("Content-Type", "application/json");
-
-    xhr.onload = function () {
-      if (xhr.status === 200) {
-        const responseData = JSON.parse(xhr.responseText);
-        document.getElementById("feedback").innerText = responseData.message;
-      } else {
-        document.getElementById("feedback").innerText = USER_MESSAGES.errorOccurredPleaseTryAgain;
-      }
-    };
-
-    xhr.onerror = function () {
-      console.error('Error:', xhr.statusText);
-      document.getElementById("feedback").innerText = USER_MESSAGES.errorOccurredPleaseTryAgain;
-    };
-
-    xhr.send(JSON.stringify({ word, definition }));
+    return await $.ajax({
+      url: path,
+      dataType: 'json',
+    }).then(data => {
+      return data;
+    });
   } catch (error) {
-    console.error('Error:', error);
-    document.getElementById("feedback").innerText = USER_MESSAGES.errorOccurredPleaseTryAgain;
+    console.error(error);
   }
-});
+}
+
+/** Performs a search at the url.
+ *  
+ */
+async function handleSearch(event) {
+  // Attempt the search.
+  try {
+
+    // Get the url and search term.
+    const url = searchEndpoint;
+    const wordInput = $('#wordInput');
+    const definitionInput = $('#definitionInput');
+    const feedback = $('#feedback');
+
+    // Get the word and definition.
+    const word = wordInput.val();
+    const definition = definitionInput.val();
+
+    if (!url) {
+      throw new Error(`url is ${url}`);
+    }
+
+    if (!feedback) {
+      throw new Error(`feedback is ${feedback}`);
+    }
+
+    // If no word or definition, 
+    if (!word || !definition) {
+      feedback.text(
+        USER_MESSAGES.pleaseFillInBothFields
+      );
+    }
+
+    $.post(searchEndpoint, {
+      word: word,
+      definition: definition
+    }).then((result) => {
+      console.log(result);
+    }).fail((error) => {
+      console.error(error);
+    });
+
+  } catch (error) {
+    console.error(error);
+  }
+}

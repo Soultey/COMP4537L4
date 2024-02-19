@@ -47,12 +47,12 @@ async function getRequestBody(req) {
     req.on('end', () => {
       try {
         resolve(JSON.parse(body));
+        return parsedBody;
       } catch (error) {
         reject('Error parsing json.');
+        return null;
       }
     })
-
-    return parsedBody;
   });
 }
 
