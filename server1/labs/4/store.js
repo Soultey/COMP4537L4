@@ -6,7 +6,7 @@ const { searchEndpoint } = await getJSON('./config.json');
 // Add event listener for form submit.
 document.addEventListener('submit', (event) => {
   event.preventDefault();
-  handleSearch();
+  handleStore();
 });
 
 /** Returns the data and status of a JSON file.
@@ -42,7 +42,7 @@ async function getJSON(path) {
  * 
  *  
  */
-async function handleSearch() {
+async function handleStore() {
   // Attempt the search.
   try {
     // Get the url and search term.

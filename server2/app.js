@@ -15,11 +15,8 @@ const serverDictionary = new ServerDictionary();
 // Create the server.
 const server = http.createServer((req, res) => {
   try {
-    // Set cors headers.
     res.setHeader('Access-Control-Allow-Origin', '*');
-    // Specifies the methods allowed when accessing the resource
-    res.setHeader('Access-Control-Allow-Methods', ' GET, POST, OPTIONS');
-    // Allows headers
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
 

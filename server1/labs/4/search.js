@@ -1,12 +1,13 @@
 import { USER_MESSAGES } from './lang/en/en.js';
 const { searchEndpoint } = await getJSON('./config.json');
 
-$(document).ready(() => {
-    $('#searchForm').on('submit', (event) => {
-        event.preventDefault();
-        handleSearch(event);
-    });
-})
+$/** Used ChatGPT as a guide. */
+
+// Add event listener for form submit.
+document.addEventListener('submit', (event) => {
+    event.preventDefault();
+    handleSearch();
+});
 
 /** Returns the data and status of a JSON file.
  * 
