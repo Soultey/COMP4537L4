@@ -45,12 +45,12 @@ async function handleSearch(event) {
 
         // If no search term, display error message.
         if (!searchTerm) {
-            searchResultDisplay.innerText = USER_MESSAGES.pleaseEnterASearchTerm;
+            searchResultDisplay.text(USER_MESSAGES.pleaseEnterASearchTerm);
             return;
         }
 
-        const result = $.get(`${url}?word=${searchTerm}`);
-        console.log(result);
+        const result = await $.get(`${url}?word=${searchTerm}`);
+        searchResultDisplay.text(`${JSON.stringify(result)}`);
     } catch (error) {
         console.error(error);
     }
