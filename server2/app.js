@@ -19,6 +19,13 @@ const server = http.createServer((req, res) => {
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
+    // Handle preflight requests
+    if (req.method === 'OPTIONS') {
+      res.writeHead(204); // No Content
+      res.end();
+      return;
+    }
+
     // Parse the request URL
     const parsedUrl = url.parse(req.url, true)
 
@@ -43,6 +50,7 @@ const server = http.createServer((req, res) => {
     }
   } catch (error) {
     console.error(error);
+    handle500(req, res);
   }
 
 });
