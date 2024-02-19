@@ -58,13 +58,20 @@ async function handleSearch(event) {
       );
     }
 
-    $.post(searchEndpoint, {
-      word: word,
-      definition: definition
-    }).then((result) => {
-      console.log(result);
-    }).fail((error) => {
-      console.error(error);
+    // POST the word.
+    $.post(searchEndpoint,
+      JSON.stringify({
+        word: word,
+        definition: definition
+      })
+    ).then((result) => {
+      feedback.text(
+        JSON.stringify(result)
+      );
+    }).fail(() => {
+      feedback.text(
+        USER_MESSAGES.errorOccurredPleaseTryAgain
+      )
     });
 
   } catch (error) {

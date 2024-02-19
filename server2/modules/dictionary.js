@@ -47,10 +47,11 @@ class ServerDictionary {
 
     /** Handles a POST to add a word.
      * 
-     * @param {{}} word the word to add
+     * @param {string} word the word to add
+     * @param {string} definition the definition of the word
      * @param {http.ServerResponse} res the response
      */
-    addEntry(word, res) {
+    addEntry(word, definition, res) {
         this.numRequests++;
 
         // If the word is null,
@@ -63,17 +64,14 @@ class ServerDictionary {
             return;
         }
 
-        // Get the word keys.
-        const wordKeys = Object.keys(word);
-
         // If the word is already in the dictionary,
         // Return 200 and a warning.
-        if (this.isWordInDictionary(wordKeys[0])) {
+        if (this.isWordInDictionary(word)) {
             res.writeHead(200, { 'Content-Type': 'application/json' });
 
             const message = USER_MESSAGES
                 .addWordWarningWordExists
-                .replace('%1', `"${Object.keys(word)[0]}"`);
+                .replace('%1', `"${word}"`);
 
             res.end(JSON.stringify({
                 message: message,
@@ -86,13 +84,17 @@ class ServerDictionary {
         // the number of requests received so far,
         // and a message.
         else {
-            this.dictionary.push(word);
+            const entry = {
+                word: word,
+                definition: definition
+            }
+            this.dictionary.push(entry);
 
             // The message to be sent.
             const successMessage = USER_MESSAGES
                 .addWordSuccessResponse
                 .replace('%1', `${this.dictionary.length}`)
-                .replace('%2', `${Object.entries(word)[0]}`)
+                .replace('%2', JSON.stringify(entry))
 
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({
