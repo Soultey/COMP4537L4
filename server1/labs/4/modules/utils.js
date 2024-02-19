@@ -59,5 +59,5 @@ async function getRequestBody(req) {
 module.exports = {
   handle404,
   handle500,
-  getRequestBody
+  getRequestBody,
 }

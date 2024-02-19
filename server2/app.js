@@ -6,7 +6,7 @@ const http = require('http')
 const path = require('path')
 const url = require('url')
 const fs = require('fs')
-const { handle404, getRequestBody } = require('./modules/utils')
+const { handle404, getRequestBody, handle500 } = require('./modules/utils')
 const { ServerDictionary } = require('./modules/dictionary')
 const { port } = require('./config.json');
 
@@ -15,6 +15,14 @@ const serverDictionary = new ServerDictionary();
 // Create the server.
 const server = http.createServer((req, res) => {
   try {
+    // Set cors headers.
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    // Specifies the methods allowed when accessing the resource
+    res.setHeader('Access-Control-Allow-Methods', ' GET, POST');
+    // Allows headers
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+
     // Parse the request URL
     const parsedUrl = url.parse(req.url, true)
 
@@ -62,8 +70,17 @@ async function handleDefinitionsRoute(req, res) {
 
   // If POST, post the definition.
   else if (req.method === 'POST') {
-    const word = await getRequestBody(req);
-    serverDictionary.addEntry(word, res);
+    await getRequestBody(req)
+      .then((body) => {
+        serverDictionary.addEntry(
+          body.word,
+          body.definition,
+          res);
+      })
+      .catch(() => {
+        handle500(req, res);
+        return;
+      });
   }
 
   // Else 404.
