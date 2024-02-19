@@ -19,8 +19,6 @@ const server = http.createServer((req, res) => {
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-    console.log(res);
-
     // Parse the request URL
     const parsedUrl = url.parse(req.url, true)
 
