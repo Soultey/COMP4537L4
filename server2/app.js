@@ -6,7 +6,7 @@ const http = require('http')
 const path = require('path')
 const url = require('url')
 const fs = require('fs')
-const { handle404, getRequestBody } = require('./modules/utils')
+const { handle404, getRequestBody, handle500 } = require('./modules/utils')
 const { ServerDictionary } = require('./modules/dictionary')
 const { port } = require('./config.json');
 
@@ -71,6 +71,10 @@ async function handleDefinitionsRoute(req, res) {
   // If POST, post the definition.
   else if (req.method === 'POST') {
     const word = await getRequestBody(req);
+    if(!word) {
+      handle500(req, res);
+      return;
+    }
     serverDictionary.addEntry(word, res);
   }
 
