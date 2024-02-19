@@ -1,48 +1,57 @@
-const { USER_MESSAGES } = require('./lang/en/en');
+import { USER_MESSAGES } from './lang/en/en.js';
+const { searchEndpoint } = await getJSON('./config.json');
 
-// Wait for the DOM content to be fully loaded
-document.addEventListener("DOMContentLoaded", function () {
-    // Get references to the search form, search input, and result elements
-    const searchForm = document.getElementById("searchForm");
-    const searchInput = document.getElementById("searchInput");
-    const result = document.getElementById("result");
-
-    // Add an event listener to the search form
-    searchForm.addEventListener("submit", function (event) {
-        // Prevent the default form submission behavior
+$(document).ready(() => {
+    $('#searchForm').on('submit', (event) => {
         event.preventDefault();
+        handleSearch(event);
+    });
+})
 
-        // Get the value of the search input and trim any leading/trailing whitespace
-        const searchTerm = searchInput.value.trim();
+/** Returns the data and status of a JSON file.
+ * 
+ * @param {string} url The path to the file.
+ * @returns 
+ */
+async function getJSON(path) {
+    try {
+        return await $.ajax({
+            url: path,
+            dataType: 'json',
+        }).then(data => {
+            return data;
+        });
+    } catch (error) {
+        console.error(error);
+    }
+}
 
-        // Check if the search term is empty
+/** Performs a search at the url.
+ *  
+ */
+async function handleSearch(event) {
+    // Attempt the search.
+    try {
+
+        // Get the url and search term.
+        const url = searchEndpoint;
+        const searchInput = event.target.searchInput;
+        const searchResultDisplay = $('#result');
+        const searchTerm = searchInput.value;
+
+        if (!url) {
+            throw new Error(`url is ${url}`);
+        }
+
+        // If no search term, display error message.
         if (!searchTerm) {
-            // Display an error message if the search term is empty
-            result.innerText = USER_MESSAGES.pleaseEnterASearchTerm;
+            searchResultDisplay.innerText = USER_MESSAGES.pleaseEnterASearchTerm;
             return;
         }
 
-        // Send an AJAX request to retrieve the definition for the search term
-        fetch(`/labs/4/api/definitions/?word=${encodeURIComponent(searchTerm)}`)
-            .then(response => {
-                // Check if the response status is 404 (Not Found)
-                if (response.status === 404) {
-                    // Display a message indicating that the word was not found in the dictionary
-                    result.innerText = USER_MESSAGES.wordSearchTermNotFound.replace('%1', searchTerm);
-                    return;
-                }
-                // Parse the JSON response
-                return response.json();
-            })
-            .then(data => {
-                // Display the word and its definition in the result element
-                result.innerHTML = `<p><strong>${data.word}</strong>: ${data.definition}</p>`;
-            })
-            .catch(error => {
-                // Log any errors to the console
-                console.error('Error:', error);
-                // Display a generic error message if an error occurs
-                result.innerText = USER_MESSAGES.errorOccurredPleaseTryAgain;
-            });
-    });
-});
+        const result = $.get(`${url}?word=${searchTerm}`);
+        console.log(result);
+    } catch (error) {
+        console.error(error);
+    }
+}
