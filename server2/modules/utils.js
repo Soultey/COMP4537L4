@@ -29,14 +29,14 @@ async function getRequestBody(req) {
   // Asynchronously parse out the body.
   return new Promise((resolve, reject) => {
     let body = '';
-    let parsedBody;
 
     if (!req) {
-      reject('req is null'); s
+      reject(new Error('Request is null.'));
+      return;
     }
 
     if (req.method !== 'POST') {
-      resolve(null);
+      resolve({});
       return;
     }
 
@@ -44,15 +44,18 @@ async function getRequestBody(req) {
       body += chunk.toString();
     });
 
-    return req.on('end', () => {
+    req.on('end', () => {
       try {
-        resolve(JSON.parse(body));
-        return parsedBody;
+        const parsedBody = JSON.parse(body);
+        resolve(parsedBody);
       } catch (error) {
-        reject('Error parsing json.');
-        return null;
+        reject(new Error('Error parsing JSON.'));
       }
-    })
+    });
+
+    req.on('error', (error) => {
+      reject(new Error('Error with the request.'));
+    });
   });
 }
 
