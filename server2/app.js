@@ -71,6 +71,7 @@ async function handleDefinitionsRoute(req, res) {
   // If POST, post the definition.
   else if (req.method === 'POST') {
     const word = await getRequestBody(req);
+    console.log(word);
     if(!word) {
       handle500(req, res);
       return;
