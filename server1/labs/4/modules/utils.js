@@ -60,5 +60,4 @@ module.exports = {
   handle404,
   handle500,
   getRequestBody,
-  getJSON
 }
