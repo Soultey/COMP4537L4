@@ -46,7 +46,6 @@ async function getRequestBody(req) {
 
     req.on('end', () => {
       try {
-        console.log(body);
         const parsedBody = JSON.parse(body);
         resolve(parsedBody);
       } catch (error) {

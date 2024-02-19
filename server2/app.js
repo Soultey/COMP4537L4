@@ -71,8 +71,11 @@ async function handleDefinitionsRoute(req, res) {
   // If POST, post the definition.
   else if (req.method === 'POST') {
     await getRequestBody(req)
-      .then((word) => {
-        serverDictionary.addEntry(word, res);
+      .then((body) => {
+        serverDictionary.addEntry(
+          body.word,
+          body.definition,
+          res);
       })
       .catch(() => {
         handle500(req, res);
